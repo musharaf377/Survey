@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Skills Assessment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .survey-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .survey-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background-size: 300% 100%;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .progress-container {
+            margin-bottom: 32px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .question-section {
+            margin-bottom: 32px;
+        }
+
+        .segment-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 16px;
+            border-left: 4px solid #667eea;
+        }
+
+        .segment-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 12px;
+        }
+
+        .segment-icon.red { background: #ef4444; }
+        .segment-icon.yellow { background: #f59e0b; }
+        .segment-icon.blue { background: #3b82f6; }
+
+        .segment-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        h2 {
+            font-size: 24px;
+            color: #1f2937;
+            margin-bottom: 24px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 20px 24px;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(103, 126, 234, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(103, 126, 234, 0.15);
+        }
+
+        .option:hover::before {
+            left: 100%;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(103, 126, 234, 0.3);
+        }
+
+        .option-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .option-text {
+            font-size: 15px;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+        .option-points {
+            display: none; /* Hide points initially */
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 32px;
+        }
+
+        .nav-button {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .prev-button {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .prev-button:hover:not(:disabled) {
+            background: #e5e7eb;
+            transform: translateX(-2px);
+        }
+
+        .next-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .next-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(103, 126, 234, 0.3);
+        }
+
+        .results-section {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .score-display {
+            font-size: 72px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            animation: scoreAnimation 1s ease-out;
+        }
+
+        @keyframes scoreAnimation {
+            from { 
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .score-label {
+            font-size: 18px;
+            color: #6b7280;
+            margin-bottom: 32px;
+        }
+
+        .score-breakdown {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 24px 0;
+            text-align: left;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .breakdown-label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .breakdown-score {
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .restart-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .restart-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(103, 126, 234, 0.3);
+        }
+
+        /* Popup Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.3);
+            transform: scale(0.8) translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .modal-subtitle {
+            color: #6b7280;
+            font-size: 16px;
+        }
+
+        .answer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 16px 0;
+            border-bottom: 1px solid #e5e7eb;
+            gap: 16px;
+        }
+
+        .answer-item:last-child {
+            border-bottom: none;
+        }
+
+        .answer-details {
+            flex: 1;
+        }
+
+        .question-text {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .answer-text {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .answer-points {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            min-width: 45px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .close-modal {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 24px;
+        }
+
+        .close-modal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(103, 126, 234, 0.3);
+        }
+
+        .view-details-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin-right: 16px;
+        }
+
+        .view-details-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .survey-container {
+                padding: 24px;
+                margin: 10px;
+            }
+            
+            h2 {
+                font-size: 20px;
+            }
+            
+            .score-display {
+                font-size: 56px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="survey-container">
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Question 1 of 15</div>
+        </div>
+
+        <div class="question-section fade-in" id="questionSection">
+            <!-- Questions will be dynamically inserted here -->
+        </div>
+
+        <div class="navigation">
+            <button class="nav-button prev-button" id="prevButton" onclick="previousQuestion()" disabled>
+                ← Previous
+            </button>
+            <button class="nav-button next-button" id="nextButton" onclick="nextQuestion()" disabled>
+                Next →
+            </button>
+        </div>
+
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <!-- Results will be shown here -->
+        </div>
+
+        <!-- Answer Details Modal -->
+        <div class="modal-overlay" id="answerModal" onclick="closeModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <div class="modal-title">Your Answer Details</div>
+                    <div class="modal-subtitle">Review all your responses and points</div>
+                </div>
+                <div id="modalAnswers">
+                    <!-- Answers will be populated here -->
+                </div>
+                <button class="close-modal" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const surveyData = [
+            {
+                segment: "Communication & Collaboration",
+                icon: "🔴",
+                iconClass: "red",
+                questions: [
+                    {
+                        question: "How would you rate your ability to explain your design decisions?",
+                        options: [
+                            { text: "I mostly rely on visuals to speak for themselves", points: 1 },
+                            { text: "I try to explain my design, but it often lacks structure", points: 2 },
+                            { text: "I explain design choices clearly when asked", points: 3 },
+                            { text: "I proactively explain my decisions using logic and user context", points: 4 }
+                        ]
+                    },
+                    {
+                        question: "When presenting your design to a team or client:",
+                        options: [
+                            { text: "I avoid presenting; I prefer others to handle it", points: 1 },
+                            { text: "I present occasionally but feel unsure while speaking", points: 2 },
+                            { text: "I share designs with some confidence", points: 3 },
+                            { text: "I lead presentations, guiding the conversation and feedback", points: 4 }
+                        ]
+                    },
+                    {
+                        question: "During team critiques or discussions, I usually:",
+                        options: [
+                            { text: "Listen silently, I feel too new to contribute", points: 1 },
+                            { text: "Share small opinions if asked directly", points: 2 },
+                            { text: "Ask questions and offer feedback if I have ideas", points: 3 },
+                            { text: "Actively participate and help improve designs", points: 4 }
+                        ]
+                    },
+                    {
+                        question: "My use of AI in design includes:",
+                        options: [
+                            { text: "I haven't explored AI tools much yet", points: 1 },
+                            { text: "I sometimes use ChatGPT or images for inspiration", points: 2 },
+                            { text: "I use AI for ideation and wireframes", points: 3 },
+                            { text: "I integrate AI across the workflow from research to delivery", points: 4 }
+                        ]
+                    },
+                    {
+                        question: "When reviewing a poor design file:",
+                        options: [
+                            { text: "I struggle to notice what's wrong", points: 1 },
+                            { text: "I notice problems but can't suggest solutions", points: 2 },
+                            { text: "I suggest a few layout or spacing improvements", points: 3 },
+                            { text: "I break down usability and business misalignments clearly", points: 4 }
+                        ]
+                    }
+                ]
+            },
+            {
+                segment: "Visual Judgment & Process Awareness",
+                icon: "🟡",
+                iconClass: "yellow",
+                questions: [
+                    {
+                        question: "How well do you understand Musemind's visual identity?",
+                        options: [
+                            { text: "I haven't studied it closely yet", points: 1 },
+                            { text: "I've seen some work but didn't analyze details", points: 2 },
+                            { text: "I try to follow their style when I design", points: 3 },
+                            { text: "I've studied their portfolio and can replicate their style", points: 4 }
+                        ]
+                    },
+                    {
+                        question: "How often do you check Musemind's Dribbble/Behance?",
+                        options: [
+                            { text: "Rarely—maybe once or twice", points: 1 },
+                            { text: "Occasionally, when I remember", points: 2 },
+                            { text: "A few times a month to get inspired", points: 3 },
+                            { text: "I check weekly or before starting any project", points: 4 }
+                        ]
+                    },
+                    {
+                        question: "When working on a UI kit or component system:",
+                        options: [
+                            { text: "I've never created or worked on one", points: 1 },
+                            { text: "I can build components but struggle with logic", points: 2 },
+                            { text: "I reuse and extend components properly", points: 3 },
+                            { text: "I contribute to and organize design systems efficiently", points: 4 }
+                        ]
+                    },
+                    {
+                        question: "Can you recreate a past Musemind project pixel-perfectly?",
+                        options: [
+                            { text: "No, I haven't tried that before", points: 1 },
+                            { text: "I can make a rough version with similar layout", points: 2 },
+                            { text: "Yes, with good precision but not exact", points: 3 },
+                            { text: "Yes, I can match visuals and structure closely", points: 4 }
+                        ]
+                    },
+                    {
+                        question: "How aware are you of dev handoff constraints?",
+                        options: [
+                            { text: "I don't know how dev handoff works", points: 1 },
+                            { text: "I export assets and hope devs figure it out", points: 2 },
+                            { text: "I annotate files and inspect for spacing/responsiveness", points: 3 },
+                            { text: "I prepare dev-friendly files and ensure feasibility", points: 4 }
+                        ]
+                    },
+                    {
+                        question: "When you receive feedback from a senior designer:",
+                        options: [
+                            { text: "I feel defensive or confused", points: 1 },
+                            { text: "I listen but forget what to change", points: 2 },
+                            { text: "I apply it and try to learn the reasoning", points: 3 },
+                            { text: "I welcome it and often ask deeper questions", points: 4 }
+                        ]
+                    },
+                    {
+                        question: "Do you understand how product decisions are made?",
+                        options: [
+                            { text: "Not really, I focus only on visuals", points: 1 },
+                            { text: "I've heard terms but not sure how it works", points: 2 },
+                            { text: "I know about user needs and market fit", points: 3 },
+                            { text: "I consider business goals and product impact in my designs", points: 4 }
+                        ]
+                    }
+                ]
+            },
+            {
+                segment: "Resume, Projects & Applying",
+                icon: "🔵",
+                iconClass: "blue",
+                questions: [
+                    {
+                        question: "What does your current resume look like?",
+                        options: [
+                            { text: "I haven't made a design-specific resume yet", points: 1 },
+                            { text: "It's 2+ pages with mixed focus", points: 2 },
+                            { text: "It's 1-page but a bit wordy", points: 3 },
+                            { text: "A focused, 1-page resume highlighting key skills and projects", points: 4 }
+                        ]
+                    },
+                    {
+                        question: "Do you have at least 2 solid case studies?",
+                        options: [
+                            { text: "Not yet, I'm working on them", points: 1 },
+                            { text: "I have visual projects but no real case studies", points: 2 },
+                            { text: "I've written some with process insights", points: 3 },
+                            { text: "Yes—strong, thoughtful, and clear case studies", points: 4 }
+                        ]
+                    },
+                    {
+                        question: "Do your projects show focus (SaaS, mobile, etc.)?",
+                        options: [
+                            { text: "My projects are random (logo, posters, etc.)", points: 1 },
+                            { text: "A few mobile/web UIs, not connected to product use", points: 2 },
+                            { text: "Most projects focus on SaaS or digital tools", points: 3 },
+                            { text: "My projects match Musemind's niches clearly", points: 4 }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let answers = [];
+        let allQuestions = [];
+
+        // Flatten all questions into a single array
+        function initializeSurvey() {
+            surveyData.forEach((segment, segmentIndex) => {
+                segment.questions.forEach((question, questionIndex) => {
+                    allQuestions.push({
+                        ...question,
+                        segment: segment.segment,
+                        segmentIcon: segment.icon,
+                        segmentIconClass: segment.iconClass,
+                        isFirstInSegment: questionIndex === 0
+                    });
+                });
+            });
+            
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            const questionSection = document.getElementById('questionSection');
+            const question = allQuestions[currentQuestionIndex];
+            
+            let segmentHeader = '';
+            if (question.isFirstInSegment) {
+                segmentHeader = `
+                    <div class="segment-header">
+                        <div class="segment-icon ${question.segmentIconClass}">${question.segmentIcon}</div>
+                        <div class="segment-title">${question.segment}</div>
+                    </div>
+                `;
+            }
+            
+            questionSection.innerHTML = `
+                ${segmentHeader}
+                <h2>${question.question}</h2>
+                <div class="options">
+                    ${question.options.map((option, index) => `
+                        <div class="option" onclick="selectOption(${index})" data-index="${index}">
+                            <div class="option-label">Option ${String.fromCharCode(65 + index)}</div>
+                            <div class="option-text">${option.text}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            // Re-select if there's a previous answer
+            if (answers[currentQuestionIndex] !== undefined) {
+                selectOption(answers[currentQuestionIndex], false);
+            }
+            
+            updateProgress();
+            updateNavigation();
+            
+            // Add fade-in animation
+            questionSection.classList.remove('fade-in');
+            setTimeout(() => questionSection.classList.add('fade-in'), 10);
+        }
+
+        function selectOption(optionIndex, shouldUpdateNavigation = true) {
+            // Clear previous selection
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Select new option
+            const selectedOption = document.querySelector(`[data-index="${optionIndex}"]`);
+            selectedOption.classList.add('selected');
+            
+            // Store answer
+            answers[currentQuestionIndex] = optionIndex;
+            
+            if (shouldUpdateNavigation) {
+                updateNavigation();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / allQuestions.length) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `Question ${currentQuestionIndex + 1} of ${allQuestions.length}`;
+        }
+
+        function updateNavigation() {
+            const prevButton = document.getElementById('prevButton');
+            const nextButton = document.getElementById('nextButton');
+            
+            prevButton.disabled = currentQuestionIndex === 0;
+            
+            const hasAnswer = answers[currentQuestionIndex] !== undefined;
+            nextButton.disabled = !hasAnswer;
+            
+            if (currentQuestionIndex === allQuestions.length - 1) {
+                nextButton.textContent = 'Show Results →';
+            } else {
+                nextButton.textContent = 'Next →';
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (answers[currentQuestionIndex] !== undefined) {
+                if (currentQuestionIndex < allQuestions.length - 1) {
+                    currentQuestionIndex++;
+                    displayQuestion();
+                } else {
+                    showResults();
+                }
+            }
+        }
+
+        function showResults() {
+            const totalScore = calculateTotalScore();
+            const segmentScores = calculateSegmentScores();
+            
+            document.getElementById('questionSection').style.display = 'none';
+            document.querySelector('.navigation').style.display = 'none';
+            document.querySelector('.progress-container').style.display = 'none';
+            
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.style.display = 'block';
+            
+            resultsSection.innerHTML = `
+                <div class="score-display">${totalScore}</div>
+                <div class="score-label">Total Score out of ${allQuestions.length * 4}</div>
+                
+                <div class="score-breakdown">
+                    <h3 style="margin-bottom: 16px; color: #374151; font-size: 18px;">Score Breakdown</h3>
+                    ${segmentScores.map(segment => `
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">${segment.name}</div>
+                            <div class="breakdown-score">${segment.score}/${segment.maxScore}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <button class="view-details-btn" onclick="showAnswerDetails()">
+                    View Answer Details
+                </button>
+                <button class="restart-button" onclick="restartSurvey()">
+                    Take Survey Again
+                </button>
+            `;
+        }
+
+        function showAnswerDetails() {
+            const modal = document.getElementById('answerModal');
+            const modalContent = document.getElementById('modalAnswers');
+            
+            let answersHTML = '';
+            answers.forEach((answerIndex, questionIndex) => {
+                const question = allQuestions[questionIndex];
+                const selectedAnswer = question.options[answerIndex];
+                
+                answersHTML += `
+                    <div class="answer-item">
+                        <div class="answer-details">
+                            <div class="question-text">Q${questionIndex + 1}: ${question.question}</div>
+                            <div class="answer-text">${selectedAnswer.text}</div>
+                        </div>
+                        <div class="answer-points">${selectedAnswer.points}</div>
+                    </div>
+                `;
+            });
+            
+            modalContent.innerHTML = answersHTML;
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('answerModal');
+            modal.classList.remove('show');
+        }
+        
+
+        function calculateTotalScore() {
+            return answers.reduce((total, answerIndex, questionIndex) => {
+                const question = allQuestions[questionIndex];
+                return total + question.options[answerIndex].points;
+            }, 0);
+        }
+
+        function calculateSegmentScores() {
+            const scores = [];
+            let questionIndex = 0;
+            
+            surveyData.forEach(segment => {
+                let segmentScore = 0;
+                const segmentQuestionCount = segment.questions.length;
+                
+                for (let i = 0; i < segmentQuestionCount; i++) {
+                    const answerIndex = answers[questionIndex + i];
+                    const question = allQuestions[questionIndex + i];
+                    segmentScore += question.options[answerIndex].points;
+                }
+                
+                scores.push({
+                    name: segment.segment,
+                    score: segmentScore,
+                    maxScore: segmentQuestionCount * 4
+                });
+                
+                questionIndex += segmentQuestionCount;
+            });
+            
+            return scores;
+        }
+
+        function restartSurvey() {
+            currentQuestionIndex = 0;
+            answers = [];
+            
+            document.getElementById('questionSection').style.display = 'block';
+            document.querySelector('.navigation').style.display = 'flex';
+            document.querySelector('.progress-container').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
+            
+            displayQuestion();
+        }
+
+        function showAnswerDetails() {
+            const modal = document.getElementById('answerModal');
+            const modalContent = document.getElementById('modalAnswers');
+            
+            let answersHTML = '';
+            answers.forEach((answerIndex, questionIndex) => {
+                const question = allQuestions[questionIndex];
+                const selectedAnswer = question.options[answerIndex];
+                
+                answersHTML += `
+                    <div class="answer-item">
+                        <div class="answer-details">
+                            <div class="question-text">Q${questionIndex + 1}: ${question.question}</div>
+                            <div class="answer-text">${selectedAnswer.text}</div>
+                        </div>
+                        <div class="answer-points">${selectedAnswer.points}</div>
+                    </div>
+                `;
+            });
+            
+            modalContent.innerHTML = answersHTML;
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('answerModal');
+            modal.classList.remove('show');
+        }
+
+        // Initialize the survey when the page loads
+        initializeSurvey();
+    </script>
+</body>
+</html>
