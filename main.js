@@ -12,7 +12,7 @@
       questions: [{
           question: "How would you rate your ability to explain your design decisions?",
           options: [{
-              texted: "I mostly rely on visuals to speak for themselves",
+              text: "I mostly rely on visuals to speak for themselves",
               points: 1
             },
             {
